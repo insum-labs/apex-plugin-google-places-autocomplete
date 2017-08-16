@@ -19,7 +19,7 @@
  */
 
  //Enter widget name. Usually ui.widgetName
- $.widget('ui.widgetName', {
+ $.widget('ui.placesAutocomplete', {
    /**
     * Examples are included in this code.
     * They will all assume that the widgetName is 'ui.foo'
@@ -36,50 +36,38 @@
     *  Getting: var myVal = $('#bar').foo('option', 'abc');
     */
    options: {
-     ajaxId : '' // This is the ajaxId for the plugin's AJAX functions to reference
+     //Information about the other date picker
+     autoComplete : {
+       id: ''
+     },
+     route : {
+       id: '',
+       form: ''
+     },
+     locality : {
+       id: '',
+       form: ''
+     },
+     administrative_area_level_1 : {
+       id: '',
+       form: ''
+     },
+     postal_code : {
+       id: '',
+       form: ''
+     },
+     country : {
+       id: '',
+       form: ''
+     },
+     lat : {
+       id: ''
+     },
+     lng : {
+       id: ''
+     }
    },
 
-   // TODO mdsouza: debugging
-   // TODO mdsouza: Add this to all the functions.
-   // TODO mdsouza: Need a way to close up (general exception handle)
-   /**
-    * Starts debugging for a function
-    * @param pGroupName Name of group for collapsed debugging
-    * @param pThis the "this" object of the calling function
-    */
-   _debugFunction: function(pGroupName, pThis){
-     // TODO mdsouza: Wrapper for Console required
-
-     var uiw = this;
-     console.groupCollapsed(uiw._scope + '.' + pGroupName);
-     console.log('this:', pThis);
-
-     var
-       //This is the function that called this function
-       callingFn = arguments.callee.caller,
-       // Got following line from: http://stackoverflow.com/questions/914968/inspect-the-names-values-of-arguments-in-the-definition-execution-of-a-javascript
-       // Get the name of all the arguments in the function.
-       argList = /\(([^)]*)/.exec(callingFn)[1].split(','),
-       // Array of arguments passed into the calling function (not this function)
-       args = Array.prototype.slice.call(callingFn.arguments);
-
-     //Display each argument
-     for(var i = 0, iMax = args.length; i < iMax; i++) {
-       if (i === 0){
-         console.log('Arguments');
-       }
-
-       if (i < argList.length){
-         console.log(argList[i].trim() + ':', args[i]);
-       }
-       else {
-         //Unassigned
-         console.warn('unassigned:', args[i]);
-       }
-     }//for
-
-
-   }, //_debugFunction
 
    /**
     * Set private widget varables.
@@ -91,7 +79,7 @@
      //No Auto Debug here since _scope is not yet set
 
      // TODO mdsouza: are we still going to use scope?
-     uiw._scope = 'ui.toggleFontSize'; //For debugging
+     uiw._scope = 'ui.placesAutocomplete'; //For debugging
 
      uiw._values = {
      };
@@ -99,8 +87,9 @@
      //Enter elements here for quick reference
      //If jQuery object, prefix with "$"
      uiw._elements = {
-       $element : $(uiw.element)
+       $element : $(uiw.element),
      };
+     //uiw._elements.$element.addClass('apex_disabled');
    }, //_setWidgetVars
 
    /**
@@ -119,6 +108,12 @@
      //CODE that only needs to be run only once when widget is applied to object
      //Ex: uiw._values.fontSize = uiw._elements.$element.css('fontSize');
 
+     //Register autoComplete
+     var autoComplete = new google.maps.places.Autocomplete(
+      /** @type {!HTMLInputElement} */(document.getElementById(uiw.options.autoComplete.id)),
+      {types: []});
+    // uiw._elements.$element.addClass('apex_disabled');
+
      console.groupEnd(consoleGroupName);
    },//_create
 
@@ -131,7 +126,7 @@
        // TODO mdsouza: Is there a way to find the current function name in a function?
        consoleGroupName = uiw._scope + '_init';
 
-     uiw._debugFunction(consoleGroupName, uiw);
+    //  uiw._debugFunction(consoleGroupName, uiw);
 
      //CODE
      //Code here will be run each time the widget is called without params
@@ -169,7 +164,7 @@
     */
    destroy: function() {
      var uiw = this;
-     $.console.log(uiw._scope, 'destroy', uiw);
+     console.log(uiw._scope, 'destroy', uiw);
 
      //restore the font size back to its original size
      uiw._elements.$element.css('fontSize', uiw._values.baseFontSize);
@@ -190,7 +185,9 @@
 function initAutocomplete(allItems, opt) {
   // apex.debug.log(allItems);
   // apex.debug.log(opt);
-
+  test = $.ui.placesAutocomplete();
+  console.log(test);
+  test.destroy();
   // Create the autocomplete object
   var autocomplete, place, place_json;
   place_json = {};
