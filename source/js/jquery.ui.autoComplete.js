@@ -18,6 +18,9 @@
  * @author Neil Fernandez - http://www.neilfernandez.com
  */
 
+
+//USE apex.debug
+
 $.widget('ui.placesAutocomplete', {
   // Default options
   options: {
@@ -41,6 +44,7 @@ $.widget('ui.placesAutocomplete', {
         id: ''
       }
     },
+    //get rid of this
     address_components: {
       route: {
         id: '',
@@ -79,7 +83,7 @@ $.widget('ui.placesAutocomplete', {
     };
 
     uiw._elements = {
-      $element: $(uiw.element)
+      $autoComplete: $(uiw.element)
     };
   }, //_setWidgetVars
 
@@ -99,8 +103,8 @@ $.widget('ui.placesAutocomplete', {
     //Register autoComplete
     var autocomplete = new google.maps.places.Autocomplete(
       /** @type {!HTMLInputElement} */
-      (document.getElementById(uiw.options.pageItems.autoComplete.id)), {
-        types: []
+      (uiw._elements.$autoComplete.get(0)), {
+        types: [] //Need to make dynamic from options
       });
 
     // Bias the autocomplete object to the user's geographical location,
@@ -125,13 +129,15 @@ $.widget('ui.placesAutocomplete', {
     autocomplete.addListener('place_changed', function() {
 
       //Using internal values and functions.
-      uiw._elements.place = autocomplete.getPlace();
+      uiw._values.place = autocomplete.getPlace();
       uiw._generateJSON();
 
       // Trigger place_changed in APEX
       // May put into _generateJSON
-      apex.jQuery("#" + uiw.options.pageItems.autoComplete.id).trigger("place_changed", uiw._values.place_json);
-
+      // apex.jQuery("#" + uiw.options.pageItems.autoComplete.id).trigger("place_changed", uiw._values.place_json);
+      //create _constants. One for what google calls the listener and the custom event.
+      uiw._elements.$autoComplete.trigger("place_changed", uiw._values.place_json);
+      // Put split as a constant
       if (uiw.options.action == "SPLIT") {
 
         // Clear out all items except for the address field
@@ -140,22 +146,24 @@ $.widget('ui.placesAutocomplete', {
         }
 
         //Set latitude and longitude if they exist
-        uiw.options.pageItems['lat'].id ? $s(uiw.options.pageItems['lat'].id, uiw._elements.place.geometry.location.lat()) : null;
-        uiw.options.pageItems['lng'].id ? $s(uiw.options.pageItems['lng'].id, uiw._elements.place.geometry.location.lng()) : null;
+        uiw.options.pageItems.lat.id ? $s(uiw.options.pageItems.lat.id, uiw._values.place.geometry.location.lat()) : null;
+        uiw.options.pageItems.lng.id ? $s(uiw.options.pageItems.lng.id, uiw._values.place.geometry.location.lng()) : null;
 
-        for (var i = 0; i < uiw._elements.place.address_components.length; i++) {
-          var addressType = uiw._elements.place.address_components[i].types[0];
+        for (var i = 0; i < uiw._values.place.address_components.length; i++) {
+          var addressType = uiw._values.place.address_components[i].types[0];
+          // GET RID OF OUTTER IF
           if (uiw.options.address_components[addressType]) {
-            if (uiw.options.address_components[addressType]['id']) {
+            if (uiw.options.address_components[addressType].id) {
+              var val = '';
               if (addressType == 'route') {
-                var val = uiw._elements.place.address_components[0].short_name + ' ' + uiw._elements.place.address_components[i][uiw.options.address_components[addressType]['form']];
-              } else {
-                var val = uiw._elements.place.address_components[i][uiw.options.address_components[addressType]['form']];
+                uiw._values.place.address_components[0].types[0] == 'street_number' ? val = uiw._values.place.address_components[0].short_name + ' ' : null;
               }
-              $s(uiw.options.address_components[addressType]['id'], val);
+              val += uiw._values.place.address_components[i][uiw.options.address_components[addressType].form];
+
+              $s(uiw.options.address_components[addressType].id, val);
             }
           }
-        }
+        } // for loop
       }
     });
 
@@ -167,7 +175,7 @@ $.widget('ui.placesAutocomplete', {
    */
   _init: function(place) {
     var uiw = this;
-    //  consoleGroupName = uiw._scope + '_init';
+
     console.log(uiw._scope, '_init', uiw);
   }, //_init
 
@@ -176,10 +184,10 @@ $.widget('ui.placesAutocomplete', {
    */
   _generateJSON: function() {
     var uiw = this;
-    var place = uiw._elements.place;
+    var place = uiw._values.place;
 
-    uiw._values.place_json["lat"] = place.geometry.location.lat();
-    uiw._values.place_json["lng"] = place.geometry.location.lng();
+    uiw._values.place_json.lat = place.geometry.location.lat();
+    uiw._values.place_json.lng = place.geometry.location.lng();
 
     for (var i = 0; i < place.address_components.length; i++) {
       var addressType = place.address_components[i].types[0];
@@ -192,8 +200,8 @@ $.widget('ui.placesAutocomplete', {
 
   destroy: function() {
     var uiw = this;
-    $.console.log(uiw._scope, 'destroy', uiw);
-
+    console.log(uiw._scope, 'destroy', uiw);
+    //Undo autocomplete
     $.Widget.prototype.destroy.apply(uiw, arguments); // default destroy
   } //destroy
 
