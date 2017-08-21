@@ -1,3 +1,4 @@
+set define off;
 create or replace procedure render_autocomplete  (
     p_item in apex_plugin.t_page_item,
     p_plugin in apex_plugin.t_plugin,
@@ -66,23 +67,6 @@ $("#%NAME%").placesAutocomplete({
     },
     route : {
       %ROUTE_ID%
-    },
-    locality : {
-      %LOCALITY_ID%
-    },
-    administrative_area_level_1 : {
-      %ADMINISTRATIVE_AREA_LEVEL_1_ID%
-    },
-    postal_code : {
-      %POSTAL_CODE_ID%
-    },
-    country : {
-      %COUNTRY_ID%
-    }
-  },
-  address_components : {
-    route : {
-      %ROUTE_ID%
       %ROUTE_FORM%
     },
     locality : {
@@ -103,6 +87,7 @@ $("#%NAME%").placesAutocomplete({
     }
   },
   %ACTION%
+  %TYPE%
 });
 ';
     l_onload_string := replace(l_onload_string,'%NAME%',p_item.name);
@@ -120,6 +105,8 @@ $("#%NAME%").placesAutocomplete({
     l_onload_string := replace(l_onload_string, '%LAT_ID%', apex_javascript.add_attribute('id',  l_latitude));
     l_onload_string := replace(l_onload_string, '%LNG_ID%', apex_javascript.add_attribute('id',  l_longitude));
     l_onload_string := replace(l_onload_string, '%ACTION%', apex_javascript.add_attribute('action',  l_action));
+    l_onload_string := replace(l_onload_string, '%TYPE%', apex_javascript.add_attribute('locationType',  l_location_type));
 
     apex_javascript.add_inline_code(p_code => l_onload_string);
 end render_autocomplete;
+/

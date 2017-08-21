@@ -29,44 +29,28 @@ $.widget('ui.placesAutocomplete', {
         id: ''
       },
       route: {
-        id: ''
+        id: '',
+        form: ''
       },
       locality: {
-        id: ''
+        id: '',
+        form: ''
       },
       administrative_area_level_1: {
-        id: ''
+        id: '',
+        form: ''
       },
       postal_code: {
-        id: ''
+        id: '',
+        form: ''
       },
       country: {
-        id: ''
+        id: '',
+        form: ''
       }
     },
-    //get rid of this
-    address_components: {
-      route: {
-        id: '',
-        form: ''
-      },
-      locality: {
-        id: '',
-        form: ''
-      },
-      administrative_area_level_1: {
-        id: '',
-        form: ''
-      },
-      postal_code: {
-        id: '',
-        form: ''
-      },
-      country: {
-        id: '',
-        form: ''
-      }
-    }
+    action: '',
+    locationType: ''
   },
 
 
@@ -79,11 +63,16 @@ $.widget('ui.placesAutocomplete', {
     uiw._scope = 'ui.placesAutocomplete'; //For debugging
 
     uiw._values = {
-      place_json: {}
+      place_json: {},
+      place: {}
     };
 
     uiw._elements = {
       $autoComplete: $(uiw.element)
+    };
+    uiw._constants = {
+      googleEvent: "place_changed",
+      apexEvent: "place_changed"
     };
   }, //_setWidgetVars
 
@@ -97,14 +86,14 @@ $.widget('ui.placesAutocomplete', {
     uiw._setWidgetVars(); // Set variables (don't modify this)
 
     var consoleGroupName = uiw._scope + '_create';
-    console.groupCollapsed(consoleGroupName);
-    console.log('this:', uiw);
+    // console.groupCollapsed(consoleGroupName); //Need to use apex.debug
+    apex.debug.log('this:', uiw);
 
     //Register autoComplete
     var autocomplete = new google.maps.places.Autocomplete(
       /** @type {!HTMLInputElement} */
       (uiw._elements.$autoComplete.get(0)), {
-        types: [] //Need to make dynamic from options
+        types: [uiw.options.locationType ? uiw.options.locationType : "geocode"]
       });
 
     // Bias the autocomplete object to the user's geographical location,
@@ -126,7 +115,7 @@ $.widget('ui.placesAutocomplete', {
     // When the user selects an address from the dropdown, populate the address
     // fields in the form.
 
-    autocomplete.addListener('place_changed', function() {
+    autocomplete.addListener(uiw._constants.googleEvent, function() {
 
       //Using internal values and functions.
       uiw._values.place = autocomplete.getPlace();
@@ -134,9 +123,7 @@ $.widget('ui.placesAutocomplete', {
 
       // Trigger place_changed in APEX
       // May put into _generateJSON
-      // apex.jQuery("#" + uiw.options.pageItems.autoComplete.id).trigger("place_changed", uiw._values.place_json);
-      //create _constants. One for what google calls the listener and the custom event.
-      uiw._elements.$autoComplete.trigger("place_changed", uiw._values.place_json);
+      uiw._elements.$autoComplete.trigger(uiw._constants.apexEvent, uiw._values.place_json);
       // Put split as a constant
       if (uiw.options.action == "SPLIT") {
 
@@ -152,22 +139,22 @@ $.widget('ui.placesAutocomplete', {
         for (var i = 0; i < uiw._values.place.address_components.length; i++) {
           var addressType = uiw._values.place.address_components[i].types[0];
           // GET RID OF OUTTER IF
-          if (uiw.options.address_components[addressType]) {
-            if (uiw.options.address_components[addressType].id) {
+          if (uiw.options.pageItems[addressType]) {
+            if (uiw.options.pageItems[addressType].id) {
               var val = '';
               if (addressType == 'route') {
                 uiw._values.place.address_components[0].types[0] == 'street_number' ? val = uiw._values.place.address_components[0].short_name + ' ' : null;
               }
-              val += uiw._values.place.address_components[i][uiw.options.address_components[addressType].form];
+              val += uiw._values.place.address_components[i][uiw.options.pageItems[addressType].form];
 
-              $s(uiw.options.address_components[addressType].id, val);
+              $s(uiw.options.pageItems[addressType].id, val);
             }
           }
-        } // for loop
+        } // END LOOP
       }
     });
 
-    console.groupEnd(consoleGroupName);
+    // console.groupEnd(consoleGroupName); // Need to find out to use apex.debug
   }, //_create
 
   /**
@@ -176,8 +163,29 @@ $.widget('ui.placesAutocomplete', {
   _init: function(place) {
     var uiw = this;
 
-    console.log(uiw._scope, '_init', uiw);
+    apex.debug.log(uiw._scope, '_init', uiw);
   }, //_init
+
+  /**
+   * Saves place_json into internal _values
+   */
+  _fillInAddress: function() {
+    var uiw = this;
+    uiw._values.place = autocomplete.getPlace();
+    var place = uiw._values.place;
+
+    uiw._values.place_json.lat = place.geometry.location.lat();
+    uiw._values.place_json.lng = place.geometry.location.lng();
+
+    for (var i = 0; i < place.address_components.length; i++) {
+      var addressType = place.address_components[i].types[0];
+      uiw._values.place_json[addressType] = place.address_components[i].long_name;
+    }
+
+    apex.debug.log(uiw._scope, '_generateJSON', uiw);
+
+  }, //_fillInAddress
+
 
   /**
    * Saves place_json into internal _values
@@ -194,13 +202,13 @@ $.widget('ui.placesAutocomplete', {
       uiw._values.place_json[addressType] = place.address_components[i].long_name;
     }
 
-    console.log(uiw._scope, '_generateJSON', uiw);
+    apex.debug.log(uiw._scope, '_generateJSON', uiw);
 
   }, //_generateJSON
 
   destroy: function() {
     var uiw = this;
-    console.log(uiw._scope, 'destroy', uiw);
+    apex.debug.log(uiw._scope, 'destroy', uiw);
     //Undo autocomplete
     $.Widget.prototype.destroy.apply(uiw, arguments); // default destroy
   } //destroy
