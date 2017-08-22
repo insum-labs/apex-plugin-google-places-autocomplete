@@ -167,14 +167,13 @@ $.widget('ui.placesAutocomplete', {
             if ( records.length > 0 ) {
                 for ( i = 0; i < records.length; i++ ) {
                     record = records[i];
-                     // Get latitude and longitude
-                     // Set latitude and longitude if they exist
 
                      // Clear out all items except for the address field
                      for (var item in uiw.options.pageItems) {
                        uiw.options.pageItems[item].id ? item == 'autoComplete' ? null : model.setValue(record, uiw.options.pageItems[item].id, '') : null;
                      }
 
+                     // Set latitude and longitude if they exist
                     uiw.options.pageItems.lat.id ? model.setValue(record, uiw.options.pageItems.lat.id, place.geometry.location.lat()) : null;
                     uiw.options.pageItems.lng.id ? model.setValue(record, uiw.options.pageItems.lng.id, place.geometry.location.lng()) : null;
 
