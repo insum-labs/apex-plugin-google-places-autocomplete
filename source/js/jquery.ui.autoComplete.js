@@ -50,7 +50,8 @@ $.widget('ui.placesAutocomplete', {
       }
     },
     action: '',
-    locationType: ''
+    locationType: '',
+    componentType: ''
   },
 
 
@@ -72,7 +73,10 @@ $.widget('ui.placesAutocomplete', {
     };
     uiw._constants = {
       googleEvent: "place_changed",
-      apexEvent: "place_changed"
+      apexEvent: "place_changed",
+      split: "SPLIT",
+      pageItem: 5120,
+      gridColumn: 7940
     };
   }, //_setWidgetVars
 
@@ -89,7 +93,7 @@ $.widget('ui.placesAutocomplete', {
     // console.groupCollapsed(consoleGroupName); //Need to use apex.debug
     apex.debug.log('this:', uiw);
 
-    //Register autoComplete
+    // Register autoComplete
     var autocomplete = new google.maps.places.Autocomplete(
       /** @type {!HTMLInputElement} */
       (uiw._elements.$autoComplete.get(0)), {
@@ -116,23 +120,21 @@ $.widget('ui.placesAutocomplete', {
     // fields in the form.
 
     autocomplete.addListener(uiw._constants.googleEvent, function() {
-
-      //Using internal values and functions.
       uiw._values.place = autocomplete.getPlace();
       uiw._generateJSON();
 
       // Trigger place_changed in APEX
-      // May put into _generateJSON
       uiw._elements.$autoComplete.trigger(uiw._constants.apexEvent, uiw._values.place_json);
-      // Put split as a constant
-      if (uiw.options.action == "SPLIT") {
+
+      // Split into page items
+      if (uiw.options.action == uiw._constants.split && uiw.options.componentType == uiw._constants.pageItem) {
 
         // Clear out all items except for the address field
         for (var item in uiw.options.pageItems) {
           item == 'autoComplete' ? null : $s(uiw.options.pageItems[item].id, '');
         }
 
-        //Set latitude and longitude if they exist
+        // Set latitude and longitude if they exist
         uiw.options.pageItems.lat.id ? $s(uiw.options.pageItems.lat.id, uiw._values.place.geometry.location.lat()) : null;
         uiw.options.pageItems.lng.id ? $s(uiw.options.pageItems.lng.id, uiw._values.place.geometry.location.lng()) : null;
 
@@ -146,11 +148,55 @@ $.widget('ui.placesAutocomplete', {
                 uiw._values.place.address_components[0].types[0] == 'street_number' ? val = uiw._values.place.address_components[0].short_name + ' ' : null;
               }
               val += uiw._values.place.address_components[i][uiw.options.pageItems[addressType].form];
-
+              // Set page item value
               $s(uiw.options.pageItems[addressType].id, val);
             }
           }
         } // END LOOP
+      }
+      // Split into grid columns
+      else if(uiw.options.action == uiw._constants.split && uiw.options.componentType == uiw._constants.gridColumn){
+        // Get the place details from the autocomplete object.
+        var place = uiw._values.place;
+        var i, records, record, model,
+        view = apex.region("autocomp").widget().interactiveGrid("getCurrentView");
+
+        if ( view.supports.edit ) { // make sure this is the editable view
+            model = view.model;
+            records = view.getSelectedRecords();
+            if ( records.length > 0 ) {
+                for ( i = 0; i < records.length; i++ ) {
+                    record = records[i];
+                     // Get latitude and longitude
+                     // Set latitude and longitude if they exist
+
+                     // Clear out all items except for the address field
+                     for (var item in uiw.options.pageItems) {
+                       uiw.options.pageItems[item].id ? item == 'autoComplete' ? null : model.setValue(record, uiw.options.pageItems[item].id, '') : null;
+                     }
+
+                    uiw.options.pageItems.lat.id ? model.setValue(record, uiw.options.pageItems.lat.id, place.geometry.location.lat()) : null;
+                    uiw.options.pageItems.lng.id ? model.setValue(record, uiw.options.pageItems.lng.id, place.geometry.location.lng()) : null;
+
+                    // Get all address components
+                    for (var i = 0; i < uiw._values.place.address_components.length; i++) {
+                      var addressType = uiw._values.place.address_components[i].types[0];
+                      // GET RID OF OUTTER IF
+                      if (uiw.options.pageItems[addressType]) {
+                        if (uiw.options.pageItems[addressType].id) {
+                          var val = '';
+                          if (addressType == 'route') {
+                            uiw._values.place.address_components[0].types[0] == 'street_number' ? val = uiw._values.place.address_components[0].short_name + ' ' : null;
+                          }
+                          val += uiw._values.place.address_components[i][uiw.options.pageItems[addressType].form];
+                          // Set grid column value
+                          model.setValue(record, uiw.options.pageItems[addressType].id, val);
+                        }
+                      }
+                    }
+                }
+            }
+        }
       }
     });
 
@@ -189,7 +235,7 @@ $.widget('ui.placesAutocomplete', {
   destroy: function() {
     var uiw = this;
     apex.debug.log(uiw._scope, 'destroy', uiw);
-    //Undo autocomplete
+    // Undo autocomplete
     $.Widget.prototype.destroy.apply(uiw, arguments); // default destroy
   } //destroy
 

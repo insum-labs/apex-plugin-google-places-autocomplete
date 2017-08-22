@@ -1,6 +1,6 @@
 set define off;
 create or replace procedure render_autocomplete  (
-    p_item in apex_plugin.t_page_item,
+    p_item in apex_plugin.t_item,
     p_plugin in apex_plugin.t_plugin,
     p_param in apex_plugin.t_item_render_param,
     p_result in out nocopy apex_plugin.t_item_render_result ) IS
@@ -9,8 +9,7 @@ create or replace procedure render_autocomplete  (
 
     l_result apex_plugin.t_item_render_result;
     l_js_params varchar2(1000);
-    l_onload_string_old varchar2(3000);
-    l_onload_string varchar2(3000);
+    l_onload_string varchar2(32767);
 
     -- Plugin attributes
     l_api_key plugin_attr := p_plugin.attribute_01;
@@ -29,6 +28,9 @@ create or replace procedure render_autocomplete  (
     l_country_long plugin_attr := p_item.attribute_11;
     l_location_type plugin_attr := p_item.attribute_12;
 
+    -- Component type
+    l_component_type plugin_attr := p_item.component_type_id;
+
 begin
 
     -- Get API key for JS file name
@@ -43,15 +45,12 @@ begin
       (p_name                  => 'jquery.ui.autoComplete'
       ,p_directory             => p_plugin.file_prefix);
 
-    -- apex_javascript.add_library
-    --   (p_name                  => 'autocomplete'
-    --   ,p_directory             => p_plugin.file_prefix);
-
     -- For use with APEX 5.1 and up. Print input element.
     sys.htp.prn (apex_string.format('<input type="text" %s size="%s" maxlength="%s"/>'
                                     , apex_plugin_util.get_element_attributes(p_item, p_item.name, 'text_field')
                                     , p_item.element_width
                                     , p_item.element_max_length));
+
 l_onload_string :=
 '
 $("#%NAME%").placesAutocomplete({
@@ -88,6 +87,7 @@ $("#%NAME%").placesAutocomplete({
   },
   %ACTION%
   %TYPE%
+  %COMPONENT_TYPE%
 });
 ';
     l_onload_string := replace(l_onload_string,'%NAME%',p_item.name);
@@ -106,7 +106,11 @@ $("#%NAME%").placesAutocomplete({
     l_onload_string := replace(l_onload_string, '%LNG_ID%', apex_javascript.add_attribute('id',  l_longitude));
     l_onload_string := replace(l_onload_string, '%ACTION%', apex_javascript.add_attribute('action',  l_action));
     l_onload_string := replace(l_onload_string, '%TYPE%', apex_javascript.add_attribute('locationType',  l_location_type));
+    l_onload_string := replace(l_onload_string, '%COMPONENT_TYPE%', apex_javascript.add_attribute('componentType',  l_component_type));
 
     apex_javascript.add_inline_code(p_code => l_onload_string);
+
+    p_result.is_navigable := true;
+
 end render_autocomplete;
 /
