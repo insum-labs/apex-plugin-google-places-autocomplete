@@ -1,4 +1,3 @@
-set define off;
 create or replace procedure render_autocomplete  (
     p_item in apex_plugin.t_item,
     p_plugin in apex_plugin.t_plugin,
@@ -113,4 +112,3 @@ $("#%NAME%").placesAutocomplete({
     p_result.is_navigable := true;
 
 end render_autocomplete;
-/
