@@ -166,26 +166,6 @@ $.widget('ui.placesAutocomplete', {
     apex.debug.log(uiw._scope, '_init', uiw);
   }, //_init
 
-  /**
-   * Saves place_json into internal _values
-   */
-  _fillInAddress: function() {
-    var uiw = this;
-    uiw._values.place = autocomplete.getPlace();
-    var place = uiw._values.place;
-
-    uiw._values.place_json.lat = place.geometry.location.lat();
-    uiw._values.place_json.lng = place.geometry.location.lng();
-
-    for (var i = 0; i < place.address_components.length; i++) {
-      var addressType = place.address_components[i].types[0];
-      uiw._values.place_json[addressType] = place.address_components[i].long_name;
-    }
-
-    apex.debug.log(uiw._scope, '_generateJSON', uiw);
-
-  }, //_fillInAddress
-
 
   /**
    * Saves place_json into internal _values
