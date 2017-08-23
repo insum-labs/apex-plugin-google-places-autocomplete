@@ -93,7 +93,7 @@ $("#%NAME%").placesAutocomplete({
   %COMP_TYPE_IG_COLUMN%
 });
 ';
-    l_onload_string := replace(l_onload_string,'%NAME%',p_item.name);
+    l_onload_string := replace(l_onload_string, '%NAME%',p_item.name);
     l_onload_string := replace(l_onload_string, '%AUTOCOMPLETE_ID%', apex_javascript.add_attribute('id',  p_item.name));
     l_onload_string := replace(l_onload_string, '%ROUTE_ID%', apex_javascript.add_attribute('id',  l_address));
     l_onload_string := replace(l_onload_string, '%ROUTE_FORM%', apex_javascript.add_attribute('form',  case when l_address_long = 'Y' then 'long_name' else 'short_name' end));
