@@ -51,7 +51,9 @@ $.widget('ui.placesAutocomplete', {
     },
     action: '',
     locationType: '',
-    componentType: ''
+    componentType: '',
+    componentTypePageItem: '',
+    componentTypeIgColumn: ''
   },
 
 
@@ -75,8 +77,8 @@ $.widget('ui.placesAutocomplete', {
       googleEvent: "place_changed",
       apexEvent: "place_changed",
       split: "SPLIT",
-      pageItem: 5120,
-      gridColumn: 7940
+      pageItem: uiw.options.componentTypePageItem,
+      gridColumn: uiw.options.componentTypeIgColumn
     };
   }, //_setWidgetVars
 
@@ -118,7 +120,6 @@ $.widget('ui.placesAutocomplete', {
 
     // When the user selects an address from the dropdown, populate the address
     // fields in the form.
-
     autocomplete.addListener(uiw._constants.googleEvent, function() {
       uiw._values.place = autocomplete.getPlace();
       uiw._generateJSON();
@@ -156,14 +157,19 @@ $.widget('ui.placesAutocomplete', {
       }
       // Split into grid columns
       else if(uiw.options.action == uiw._constants.split && uiw.options.componentType == uiw._constants.gridColumn){
+        var $selector = $('#' + uiw.options.pageItems.autoComplete.id);
+        var region = apex.region.findClosest($selector);
+
         // Get the place details from the autocomplete object.
         var place = uiw._values.place;
         var i, records, record, model,
-        view = apex.region("autocomp").widget().interactiveGrid("getCurrentView");
+        view = region.widget().interactiveGrid("getCurrentView");
 
         if ( view.supports.edit ) { // make sure this is the editable view
             model = view.model;
             records = view.getSelectedRecords();
+            // TODO Fix issue when clicking Return instead of clicking in the IG. Current record issue.
+            apex.debug.log('record: ',records.length);
             if ( records.length > 0 ) {
                 for ( i = 0; i < records.length; i++ ) {
                     record = records[i];
@@ -193,7 +199,7 @@ $.widget('ui.placesAutocomplete', {
                         }
                       }
                     }
-                }
+                } // END LOOP
             }
         }
       }

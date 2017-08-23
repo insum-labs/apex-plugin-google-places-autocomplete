@@ -29,6 +29,8 @@ create or replace procedure render_autocomplete  (
 
     -- Component type
     l_component_type plugin_attr := p_item.component_type_id;
+    l_comp_type_ig_column plugin_attr := apex_component.c_comp_type_ig_column;
+    l_comp_type_page_item plugin_attr := apex_component.c_comp_type_page_item;
 
 begin
 
@@ -86,26 +88,31 @@ $("#%NAME%").placesAutocomplete({
   },
   %ACTION%
   %TYPE%
-  %COMPONENT_TYPE%
+  %COMP_TYPE%
+  %COMP_TYPE_PAGE_ITEM%
+  %COMP_TYPE_IG_COLUMN%
 });
 ';
     l_onload_string := replace(l_onload_string,'%NAME%',p_item.name);
     l_onload_string := replace(l_onload_string, '%AUTOCOMPLETE_ID%', apex_javascript.add_attribute('id',  p_item.name));
     l_onload_string := replace(l_onload_string, '%ROUTE_ID%', apex_javascript.add_attribute('id',  l_address));
-    l_onload_string := replace(l_onload_string, '%ROUTE_FORM%', apex_javascript.add_attribute('form',  CASE WHEN l_address_long = 'Y' THEN 'long_name' ELSE 'short_name' END));
+    l_onload_string := replace(l_onload_string, '%ROUTE_FORM%', apex_javascript.add_attribute('form',  case when l_address_long = 'Y' then 'long_name' else 'short_name' end));
     l_onload_string := replace(l_onload_string, '%LOCALITY_ID%', apex_javascript.add_attribute('id',  l_city));
     l_onload_string := replace(l_onload_string, '%LOCALITY_FORM%', apex_javascript.add_attribute('form',  'long_name'));
     l_onload_string := replace(l_onload_string, '%ADMINISTRATIVE_AREA_LEVEL_1_ID%', apex_javascript.add_attribute('id',  l_state));
-    l_onload_string := replace(l_onload_string, '%ADMINISTRATIVE_AREA_LEVEL_1_FORM%', apex_javascript.add_attribute('form',  CASE WHEN l_state_long = 'Y' THEN 'long_name' ELSE 'short_name' END));
+    l_onload_string := replace(l_onload_string, '%ADMINISTRATIVE_AREA_LEVEL_1_FORM%', apex_javascript.add_attribute('form',  case when l_state_long = 'Y' then 'long_name' else 'short_name' end));
     l_onload_string := replace(l_onload_string, '%POSTAL_CODE_ID%', apex_javascript.add_attribute('id',  l_zip));
     l_onload_string := replace(l_onload_string, '%POSTAL_CODE_FORM%', apex_javascript.add_attribute('form',  'long_name'));
     l_onload_string := replace(l_onload_string, '%COUNTRY_ID%', apex_javascript.add_attribute('id',  l_country));
-    l_onload_string := replace(l_onload_string, '%COUNTRY_FORM%', apex_javascript.add_attribute('form',  CASE WHEN l_country_long = 'Y' THEN 'long_name' ELSE 'short_name' END));
+    l_onload_string := replace(l_onload_string, '%COUNTRY_FORM%', apex_javascript.add_attribute('form',  case when l_country_long = 'Y' then 'long_name' else 'short_name' end));
     l_onload_string := replace(l_onload_string, '%LAT_ID%', apex_javascript.add_attribute('id',  l_latitude));
     l_onload_string := replace(l_onload_string, '%LNG_ID%', apex_javascript.add_attribute('id',  l_longitude));
     l_onload_string := replace(l_onload_string, '%ACTION%', apex_javascript.add_attribute('action',  l_action));
     l_onload_string := replace(l_onload_string, '%TYPE%', apex_javascript.add_attribute('locationType',  l_location_type));
-    l_onload_string := replace(l_onload_string, '%COMPONENT_TYPE%', apex_javascript.add_attribute('componentType',  l_component_type));
+    l_onload_string := replace(l_onload_string, '%COMP_TYPE%', apex_javascript.add_attribute('componentType',  l_component_type));
+    l_onload_string := replace(l_onload_string, '%COMP_TYPE_PAGE_ITEM%', apex_javascript.add_attribute('componentTypePageItem',  l_comp_type_page_item));
+    l_onload_string := replace(l_onload_string, '%COMP_TYPE_IG_COLUMN%', apex_javascript.add_attribute('componentTypeIgColumn',  l_comp_type_ig_column));
+
 
     apex_javascript.add_inline_code(p_code => l_onload_string);
 
