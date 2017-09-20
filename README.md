@@ -29,7 +29,8 @@ Return address into Interactive Grid columns
 <YouTube Video Pending>
 
 Return address JSON
-`administrative_area_level_1 : "New York"
+```
+administrative_area_level_1 : "New York"
 administrative_area_level_2 : "Clinton County"
 country : "United States"
 lat : 44.697461
@@ -38,7 +39,8 @@ locality : "Plattsburgh"
 postal_code : "12901"
 postal_code_suffix : "2727"
 route : "Beekman Street"
-street_number : "46"`
+street_number : "46"
+```
 <YouTube Video Pending>
 
 ### Installation
