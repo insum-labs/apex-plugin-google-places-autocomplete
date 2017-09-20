@@ -1,7 +1,7 @@
 # Place Autocomplete Plugin
 > Designed by Oracle APEX developers, for Oracle APEX developers.
 
-![](https://user-images.githubusercontent.com/9313239/30662746-2b1133a2-9e16-11e7-8a18-497f1fff3c80.gif)
+![](https://user-images.githubusercontent.com/9313239/30663109-969e9a0a-9e17-11e7-83e3-a111b0385e7f.gif)
 
 ### Features
 Return address into multiple items
