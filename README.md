@@ -2,46 +2,21 @@
 > Designed by Oracle APEX developers, for Oracle APEX developers.
 
 ### Features
-Return address into multiple items
-
+#### Return address into multiple items
 ![](https://user-images.githubusercontent.com/9313239/30663109-969e9a0a-9e17-11e7-83e3-a111b0385e7f.gif)
 
-* `Address` - Return the street address into an item.
-  * `Address Long Form` - Setting to 'Yes' will return the unabbreviated street address. Ex: Street vs. St.
-* `City` - Return the city into an item.
-* `State` - Return the state into an item.
-  * `State Long Form` - Setting to 'Yes' will return the unabbreviated state. Ex: New York vs. NY
-* `ZIP` - Return the ZIP into an item.
-* `Country` - Return the country into an item.
-  * `Country Long Form` - Setting to 'Yes' will return the unabbreviated country. Ex: United States vs. US
-* `Latitude` - Return the latitude into an item.
-* `Longitude` - Return the longitude into an item.
-
-Return address into Interactive Grid columns
-
+#### Return address into Interactive Grid columns
 ![](https://user-images.githubusercontent.com/9313239/30664071-7cd91ff2-9e1a-11e7-9a13-5f47801c2b1d.gif)
 
-* `Address` - Return the street address into a column.
-  * `Address Long Form` - Setting to 'Yes' will return the unabbreviated street address. Ex: Street vs. St.
-* `City` - Return the city into a column.
-* `State` - Return the state into a column.
-  * `State Long Form` - Setting to 'Yes' will return the unabbreviated state. Ex: New York vs. NY
-* `ZIP` - Return the ZIP into a column.
-* `Country` - Return the country into a column.
-  * `Country Long Form` - Setting to 'Yes' will return the unabbreviated country. Ex: United States vs. US
-* `Latitude` - Return the latitude into a column.
-* `Longitude` - Return the longitude into a column.
-
-Return address JSON
-
-![](https://user-images.githubusercontent.com/9313239/30664716-a1a69eb6-9e1c-11e7-878c-f7a0556812ce.gif)
+#### Return address JSON
+![](https://user-images.githubusercontent.com/9313239/30666236-a4bca064-9e21-11e7-93cf-914235af5e82.gif)
 
 Create a Dynamic Action
 * `Event` : place_changed[Google Address Autocomplete]
 * `Selection Type` : Item(s)
-* `Item(s)` : <autocomplete plugin item>
+* `Item(s)` : `<autocomplete plugin item>`
 
-True:
+On True:
 * `Action` : Execute JavaScript Code
 * `Code` : ```console.log(this.data)```
 
