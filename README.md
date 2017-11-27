@@ -1,4 +1,4 @@
-# Place Autocomplete Plugin
+# Google Places Autocomplete Plugin
 > Designed by Oracle APEX developers, for Oracle APEX developers.
 
 ## Features
