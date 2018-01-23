@@ -1,3 +1,4 @@
+prompt --application/set_environment
 set define off verify off feedback off
 whenever sqlerror exit sql.sqlcode rollback
 --------------------------------------------------------------------------------
@@ -13,16 +14,11 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2016.08.24'
-,p_release=>'5.1.1.00.08'
+,p_release=>'5.1.4.00.08'
 ,p_default_workspace_id=>1880665973001338
 ,p_default_application_id=>254
 ,p_default_owner=>'SANDBOX'
 );
-end;
-/
-prompt --application/ui_types
-begin
-null;
 end;
 /
 prompt --application/shared_components/plugins/item_type/com_insum_placecomplete
@@ -440,6 +436,12 @@ wwv_flow_api.create_plugin_attr_value(
 ,p_display_value=>'(cities)'
 ,p_return_value=>'(cities)'
 ,p_help_text=>'The (cities) type collection instructs the Places service to return results that match locality or administrative_area_level_3.'
+);
+wwv_flow_api.create_plugin_event(
+ p_id=>wwv_flow_api.id(215575634518904397)
+,p_plugin_id=>wwv_flow_api.id(137888084662405544)
+,p_name=>'place_changed'
+,p_display_name=>'place_changed'
 );
 end;
 /
