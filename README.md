@@ -38,6 +38,8 @@ Example:
 }
 ```
 
+Note : This only works for the Page Item and not the Interactive Grid for now.
+
 ## Installation
 1. Download the item_type_plugin_com_insum_placecomplete.sql file.
 2. Import the plugin into your application.
