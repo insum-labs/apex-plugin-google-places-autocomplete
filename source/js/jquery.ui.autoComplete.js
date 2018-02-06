@@ -224,6 +224,7 @@ $.widget('ui.placesAutocomplete', {
   _generateJSON: function() {
     var uiw = this;
     var place = uiw._values.place;
+    uiw._values.place_json = {};
 
     uiw._values.place_json.lat = place.geometry.location.lat();
     uiw._values.place_json.lng = place.geometry.location.lng();
