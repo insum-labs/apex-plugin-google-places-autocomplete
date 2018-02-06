@@ -48,6 +48,9 @@ Example:
 Google has limits on the amount of requests per day that you can make for free. This plugin uses the Google Maps JavaScript API. Please view the pricing table to determine if you will need to enable billing:
 https://developers.google.com/maps/pricing-and-plans/#details
 
+## Changelog
+[See changelog.](changelog.md)
+
 ## Project Sponsors
 [Insum Solutions](http://insum.ca)
 
