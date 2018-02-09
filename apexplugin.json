@@ -1,5 +1,5 @@
 {
-  "name" : "Place Autocomplete",
+  "name" : "Googles Places Autocomplete",
   "version" : "1.0.4",
   "description" : "Address autcomplete for Page Items and Interactive Grid",
   "keywords" : ["address", "autocomplete", "interactive grid", "google", "maps", "places", "google maps api"],
