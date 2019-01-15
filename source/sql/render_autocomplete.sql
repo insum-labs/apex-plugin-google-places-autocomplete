@@ -26,11 +26,14 @@ create or replace procedure render_autocomplete  (
     l_state_long plugin_attr := p_item.attribute_10;
     l_country_long plugin_attr := p_item.attribute_11;
     l_location_type plugin_attr := p_item.attribute_12;
+    l_location_bias plugin_attr := p_item.attribute_13;
 
     -- Component type
     l_component_type plugin_attr := p_item.component_type_id;
     l_comp_type_ig_column plugin_attr := apex_component.c_comp_type_ig_column;
     l_comp_type_page_item plugin_attr := apex_component.c_comp_type_page_item;
+    
+    c_name constant varchar2(30) := apex_plugin.get_input_name_for_item;
 
 begin
 
@@ -48,7 +51,7 @@ begin
 
     -- For use with APEX 5.1 and up. Print input element.
     sys.htp.prn (apex_string.format('<input type="text" %s size="%s" maxlength="%s"/>'
-                                    , apex_plugin_util.get_element_attributes(p_item, p_item.name, 'text_field')
+                                    , apex_plugin_util.get_element_attributes(p_item, c_name, 'text_field')
                                     , p_item.element_width
                                     , p_item.element_max_length));
 
@@ -58,6 +61,7 @@ $("#%NAME%").placesAutocomplete({
   pageItems : {
     autoComplete : {
       %AUTOCOMPLETE_ID%
+      %PAGE_ITEM_VALUE%
     },
     lat : {
       %LAT_ID%
@@ -91,10 +95,12 @@ $("#%NAME%").placesAutocomplete({
   %COMP_TYPE%
   %COMP_TYPE_PAGE_ITEM%
   %COMP_TYPE_IG_COLUMN%
+  %LOCATION_BIAS%
 });
 ';
-    l_onload_string := replace(l_onload_string, '%NAME%',p_item.name);
+    l_onload_string := replace(l_onload_string,'%NAME%',p_item.name);
     l_onload_string := replace(l_onload_string, '%AUTOCOMPLETE_ID%', apex_javascript.add_attribute('id',  p_item.name));
+    l_onload_string := replace(l_onload_string, '%PAGE_ITEM_VALUE%', apex_javascript.add_attribute('page_item_value',  V(p_item.attribute_02)));
     l_onload_string := replace(l_onload_string, '%ROUTE_ID%', apex_javascript.add_attribute('id',  l_address));
     l_onload_string := replace(l_onload_string, '%ROUTE_FORM%', apex_javascript.add_attribute('form',  case when l_address_long = 'Y' then 'long_name' else 'short_name' end));
     l_onload_string := replace(l_onload_string, '%LOCALITY_ID%', apex_javascript.add_attribute('id',  l_city));
@@ -112,6 +118,7 @@ $("#%NAME%").placesAutocomplete({
     l_onload_string := replace(l_onload_string, '%COMP_TYPE%', apex_javascript.add_attribute('componentType',  l_component_type));
     l_onload_string := replace(l_onload_string, '%COMP_TYPE_PAGE_ITEM%', apex_javascript.add_attribute('componentTypePageItem',  l_comp_type_page_item));
     l_onload_string := replace(l_onload_string, '%COMP_TYPE_IG_COLUMN%', apex_javascript.add_attribute('componentTypeIgColumn',  l_comp_type_ig_column));
+    l_onload_string := replace(l_onload_string, '%LOCATION_BIAS%', apex_javascript.add_attribute('locationBias',  l_location_bias));
 
 
     apex_javascript.add_inline_code(p_code => l_onload_string);

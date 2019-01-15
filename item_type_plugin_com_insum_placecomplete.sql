@@ -13,8 +13,8 @@ whenever sqlerror exit sql.sqlcode rollback
 --------------------------------------------------------------------------------
 begin
 wwv_flow_api.import_begin (
- p_version_yyyy_mm_dd=>'2018.05.24'
-,p_release=>'18.2.0.00.07'
+ p_version_yyyy_mm_dd=>'2016.05.24'
+,p_release=>'18.2.0.00.12'
 ,p_default_workspace_id=>46676368827565584793
 ,p_default_application_id=>69035
 ,p_default_owner=>'INSUM_LABS'
@@ -65,6 +65,8 @@ wwv_flow_api.create_plugin(
 '    l_component_type plugin_attr := p_item.component_type_id;',
 '    l_comp_type_ig_column plugin_attr := apex_component.c_comp_type_ig_column;',
 '    l_comp_type_page_item plugin_attr := apex_component.c_comp_type_page_item;',
+'    ',
+'    c_name constant varchar2(30) := apex_plugin.get_input_name_for_item;',
 '',
 'begin',
 '',
@@ -82,7 +84,7 @@ wwv_flow_api.create_plugin(
 '',
 '    -- For use with APEX 5.1 and up. Print input element.',
 '    sys.htp.prn (apex_string.format(''<input type="text" %s size="%s" maxlength="%s"/>''',
-'                                    , apex_plugin_util.get_element_attributes(p_item, p_item.name, ''text_field'')',
+'                                    , apex_plugin_util.get_element_attributes(p_item, c_name, ''text_field'')',
 '                                    , p_item.element_width',
 '                                    , p_item.element_max_length));',
 '',
@@ -162,7 +164,7 @@ wwv_flow_api.create_plugin(
 ,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:READONLY:SOURCE:ELEMENT:WIDTH:ENCRYPT'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true
-,p_version_identifier=>'1.1.0'
+,p_version_identifier=>'1.1.1'
 ,p_about_url=>'https://github.com/insum-labs/apex-plugin-google-places-autocomplete'
 ,p_files_version=>15
 );
