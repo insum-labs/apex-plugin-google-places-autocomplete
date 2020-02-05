@@ -143,30 +143,32 @@ $.widget('ui.placesAutocomplete', {
     enableEnterKey(autocomplete_elm);
 
     function enableEnterKey(input) {
-       // Store original event listener
-       const _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
+      // Store original event listener
+      const _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
 
-       const addEventListenerWrapper = function(type, listener) {
-         if (type === "keydown") {
-           // Store existing listener function
-           const _listener = listener;
-           listener = function(event) {
-             // Simulate a 'down arrow' keypress if no address has been selected
-             const suggestion_selected = document.getElementsByClassName('pac-item-selected').length > 0;
-             if (event.which === 9 || event.which === 13 && !suggestion_selected) {
-               const e = JSON.parse(JSON.stringify(event));
-               e.which = 40;
-               e.keyCode = 40;
-               _listener.apply(input, [e]);
-             }
-             _listener.apply(input, [event]);
-           }
-         }
-         _addEventListener.apply(input, [type, listener]);
-       }
-
-       input.addEventListener = addEventListenerWrapper;
-       input.attachEvent      = addEventListenerWrapper;
+      const addEventListenerWrapper = function(type, listener) {
+        if (type === "keydown") {
+          // Store existing listener function
+          const _listener = listener;
+          listener = function(event) {
+            // Simulate a 'down arrow' keypress if no address has been selected
+            const suggestion_selected = document.getElementsByClassName('pac-item-selected').length > 0;
+            if (event.which === 9 || event.which === 13 && !suggestion_selected) {
+              // Cody Reandeau 1/13/20 - fix applied to error: TypeError: a.stopPropagation is not a function
+              // instead of parsing the incoming event parameter we're now creating an event object which fixed the issue.
+              var simulated_downarrow = $.Event("keydown", {
+                  keyCode: 40,
+                which: 40
+              });
+              _listener.apply(input, [simulated_downarrow]);			   
+            }
+            _listener.apply(input, [event]);
+          }
+        }
+        _addEventListener.apply(input, [type, listener]);
+      }
+      input.addEventListener = addEventListenerWrapper;
+      input.attachEvent      = addEventListenerWrapper;
      }
 
     // When the user selects an address from the dropdown, populate the address
