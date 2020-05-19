@@ -137,34 +137,36 @@ $.widget('ui.placesAutocomplete', {
       }
     }
 
+    // 1/15/19 Marie Hilpl: Fix old enter/tab listener
     // When enter or tab pressed, simulate selection of first item in dropdown
     var autocomplete_elm = document.getElementById(autocomplete_elm_id);
-    enableEnterKey(autocomplete_elm);
+    enableEnterTabKeys(autocomplete_elm);
 
-    function enableEnterKey(input) {
+    function enableEnterTabKeys(input) {
       // Store original event listener
-      const _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
+      var _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
 
-      const addEventListenerWrapper = function(type, listener) {
+      function addEventListenerWrapper(type, listener) {
+        // Simulate a 'down arrow' keypress on hitting 'return' when no pac suggestion is selected,
+        // and then trigger the original listener.
         if (type === "keydown") {
           // Store existing listener function
-          const _listener = listener;
+          var orig_listener = listener;
           listener = function(event) {
-            // Simulate a 'down arrow' keypress if no address has been selected
-            const suggestion_selected = document.getElementsByClassName('pac-item-selected').length > 0;
+            var suggestion_selected = $(".pac-item-selected").length > 0;
             if (event.which === 9 || event.which === 13 && !suggestion_selected) {
-              // Cody Reandeau 1/13/20 - fix applied to error: TypeError: a.stopPropagation is not a function
-              // instead of parsing the incoming event parameter we're now creating an event object which fixed the issue.
-              var simulated_downarrow = $.Event("keydown", {
-                  keyCode: 40,
-                which: 40
-              });
-              _listener.apply(input, [simulated_downarrow]);			   
-            }
-            _listener.apply(input, [event]);
-          }
-        }
-        _addEventListener.apply(input, [type, listener]);
+               var simulated_downarrow = $.Event("keydown", {
+                   keyCode: 40,
+                   which: 40
+               });
+               orig_listener.apply(input, [simulated_downarrow]);
+           }
+
+           orig_listener.apply(input, [event]);
+
+          };
+       }
+         _addEventListener.apply(input, [type, listener]);
       }
       input.addEventListener = addEventListenerWrapper;
       input.attachEvent      = addEventListenerWrapper;
