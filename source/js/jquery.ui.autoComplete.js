@@ -194,9 +194,17 @@ $.widget('ui.placesAutocomplete', {
           // Clear out all items except for the address field
           uiw._clearItems();
 
+          var lat = uiw._values.place.geometry.location.lat();
+          var long = uiw._values.place.geometry.location.lng();
+
+          if (apex.locale.getDecimalSeparator() == ',') {
+              lat = lat.toString().replace(/\./g, ',');
+              long = long.toString().replace(/\./g, ',');
+          }
+
           // Set latitude and longitude if they exist
-          uiw.options.pageItems.lat.id ? $s(uiw.options.pageItems.lat.id, uiw._values.place.geometry.location.lat()) : null;
-          uiw.options.pageItems.lng.id ? $s(uiw.options.pageItems.lng.id, uiw._values.place.geometry.location.lng()) : null;
+          uiw.options.pageItems.lat.id ? $s(uiw.options.pageItems.lat.id, lat) : null;
+          uiw.options.pageItems.lng.id ? $s(uiw.options.pageItems.lng.id, long) : null;
 
           for (var i = 0; i < uiw._values.place.address_components.length; i++) {
             var addressType = uiw._values.place.address_components[i].types[0];
