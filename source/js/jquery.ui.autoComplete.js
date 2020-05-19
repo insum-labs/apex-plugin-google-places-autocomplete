@@ -101,11 +101,10 @@ $.widget('ui.placesAutocomplete', {
     apex.debug.log('this:', uiw);
 
     // Register autoComplete
+    var options = uiw.options.locationType ? {types: [uiw.options.locationType]} : {};
     var autocomplete = new google.maps.places.Autocomplete(
       /** @type {!HTMLInputElement} */
-      (uiw._elements.$autoComplete.get(0)), {
-        types: [uiw.options.locationType ? uiw.options.locationType : "geocode"]
-      });
+      (uiw._elements.$autoComplete.get(0)), options);
     // 8/1/18 Marie Hilpl: Set style of autocomplete input to be the same as the reset of the inputs
     // Problem identified in Apex 5.1
     var autocomplete_elm_id = uiw.options.pageItems.autoComplete.id;
