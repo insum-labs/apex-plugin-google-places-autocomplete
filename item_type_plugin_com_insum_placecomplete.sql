@@ -13,8 +13,8 @@ whenever sqlerror exit sql.sqlcode rollback
 --------------------------------------------------------------------------------
 begin
 wwv_flow_api.import_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2016.08.24'
+,p_release=>'5.1.4.00.08'
 ,p_default_workspace_id=>46676368827565584793
 ,p_default_application_id=>136441
 ,p_default_id_offset=>0
