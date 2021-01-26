@@ -354,7 +354,10 @@ $.widget('ui.placesAutocomplete', {
     if (uiw.options.componentType == uiw._constants.pageItem) {
       // Clear out all items except for the address field
       for (var item in uiw.options.pageItems) {
-        item == 'autoComplete' ? null : $s(uiw.options.pageItems[item].id, '');
+        // #25: Fixes issue in APEX 20.x as the id is an empty string if not defined (this is ok)
+        if (item != 'autoComplete' && uiw.options.pageItems[item].id != ''){
+          $s(uiw.options.pageItems[item].id, '');
+        }
       }
     }
     // Clear IR Grid cells
