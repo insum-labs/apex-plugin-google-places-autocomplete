@@ -117,7 +117,7 @@ $.widget('ui.placesAutocomplete', {
       //uiw.options.pageItems.autoComplete.id ? $s(uiw.options.pageItems.autoComplete.id, uiw.options.pageItems.autoComplete.page_item_value) : null;
       $s(uiw.options.pageItems.autoComplete.id, uiw.options.pageItems.autoComplete.page_item_value);
     }
-
+    //console.log('xxGKNRESULT:'+uiw.options.pageItems.autoComplete.page_item_value);
     // 8/1/18 Marie Hilpl: Commented out because google places is automatically geolocating by IP address
     // Bias the autocomplete object to the user's geographical location,
     // as supplied by the browser's 'navigator.geolocation' object.
@@ -144,6 +144,7 @@ $.widget('ui.placesAutocomplete', {
 
     function enableEnterTabKeys(input) {
       // Store original event listener
+      //console.log('xxGKNINPUT:'+input);
       var _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
 
       function addEventListenerWrapper(type, listener) {
@@ -242,7 +243,7 @@ $.widget('ui.placesAutocomplete', {
         else if(uiw.options.action == uiw._constants.split && uiw.options.componentType == uiw._constants.gridColumn){
           var $selector = $('#' + uiw.options.pageItems.autoComplete.id);
           var region = apex.region.findClosest($selector);
-
+          
           // Get the place details from the autocomplete object.
           var place = uiw._values.place;
           var i, records, record, model,
@@ -263,11 +264,17 @@ $.widget('ui.placesAutocomplete', {
                        }*/
                       // Clear out all items except for the address field
                       uiw._clearItems(model, record);
-
-                      // Set latitude and longitude if they exist
-                      // 8/1/18 Marie Hilpl: added ' "" + ' before the value for lat/lng to fix bug where numbers would not save
-                      uiw.options.pageItems.lat.id ? model.setValue(record, uiw.options.pageItems.lat.id, "" + place.geometry.location.lat()) : null;
-                      uiw.options.pageItems.lng.id ? model.setValue(record, uiw.options.pageItems.lng.id, "" + place.geometry.location.lng()) : null;
+                        //Changed by Erel Öztürk
+                        let newLat = place.geometry.location.lat();
+                        let newLon = place.geometry.location.lng();
+                        if (apex.locale.getDecimalSeparator() == ',') {
+                            newLat = newLat.toString().replace(/\./g, ',');
+                            newLon = newLon.toString().replace(/\./g, ',');
+                        }
+                        uiw.options.pageItems.lat.id ? model.setValue(record, uiw.options.pageItems.lat.id, "" + newLat) : null;
+                        uiw.options.pageItems.lng.id ? model.setValue(record, uiw.options.pageItems.lng.id, "" + newLon) : null;
+                        //console.log("**EÖ** lat.id: "+uiw.options.pageItems.lat.id+" || lon.id: "+uiw.options.pageItems.lng.id);
+                        //console.log("**EÖ** lat: "+newLat+" || lon: "+newLon);
 
                       // Get all address components
                       for (var i = 0; i < uiw._values.place.address_components.length; i++) {
